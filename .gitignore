@@ -33,3 +33,5 @@
 
 #Specifics
 *.txt
+.vscode/
+*.sh

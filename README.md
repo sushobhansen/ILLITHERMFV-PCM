@@ -1,5 +1,5 @@
 # ILLITHERMFV-PCM
-A repository for an advanced version of ILLITHERM-FV that also implements PCMs and thermochromic materials
+A repository for an advanced version of ILLITHERM-FV that also implements PCMs and thermochromic materials. Developed by Dr. Sushobhan Sen at the University of Pittsburgh and IIT Gandhinagar.
 
 ### Input file format - layers
 **GENERAL SECTION**
@@ -49,3 +49,24 @@ This section starts with "*SUBGRADE" and contains information related to the sub
 Where the subgrade has a thermal conductivity of 0.54 W/mK, a heat capacity of 347 J/kgK, and a density of 1450 kg/m3.
 
 ### Input file format - weather
+The weather data is a **space delimited** file consisting of one line for every hour of weather data to be analyzed. Each line starts with four entries: the year, month, day, and hour (with midnight as 0) of analysis. These four values are needed to estimate the amount of solar radiation incident on the surface. These inputs must be integers. The rest of the line consists of six entries: air temperature (in C), wind speed (in m/s), percent of sunshine (%, which is 100% - cloud cover), the dew point temperature (in C), the latitude (N is positive), and the longitude (E is positive). For example:
+```
+1979 1 1 2 1.777777778 5.811354493 1 -1.222222222 35.02 -106.37
+```
+This entry is for January 1, 1979 at 2:00 AM. The air temperature is 1.78C, wind speed is 5.81 m/s, there is only 1% of sunshine (i.e., 99% cloud cover), dew point is -1.22C, latitude is 35.02N, and longitude is 106.37W.
+
+### Compile program
+The program was developed on Linux (Ubuntu) with the g++ compiler based on the C++ 2011 standard. Successful compilation on other configurations is not guaranteed. A `Makefile` is included to compile the program, simple run the following command:
+```
+make ilthpcm
+```
+This will create ilthpcm.out, which is the executable. 
+
+### Run program
+The ilthpcm.out executable expects three command-line arguments: the input layers file, the input weather file, and the output file. The first two must be formatted as specified above. To run the program, simply call the executable with the command-line arguments. For example:
+```
+./ilthpcm.out layersinput1.txt weatherinput1.txt tempoutput1.txt
+```
+
+### Output file format
+TBD
