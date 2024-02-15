@@ -32,6 +32,6 @@
 *.app
 
 #Specifics
-*.txt
 .vscode/
-*.sh
+*.txt
+*.dat

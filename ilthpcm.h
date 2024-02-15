@@ -1,9 +1,15 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <stdlib.h>
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <limits>
 #include <math.h>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 using namespace std;
 
@@ -94,3 +100,13 @@ class Weather
 /*Function prototypes*/
 void readInputFile(int &numStepsPerHour, Surface &surface, vector<Layer> &layers, string inputFile);
 void readWeatherData(vector<Weather> &weatherData, string inputFile);
+void defineMesh(vector<float> &x, vector<float> &dx, vector<float> &alpha, vector<Layer> layerVector, int noOfElements);
+float solar(Weather weatherObject);
+float longwave(Weather weatherObject, float Ts, float emissivity);
+float convection(Weather weatherObject, float Ts);
+void solve(vector<float>& Tnew, vector<float> a, vector<float> b, vector<float> c, vector<float> d, int noOfElements);
+void stiffnessmat(vector<float>& a, vector<float>& b, vector<float>& c, vector<float> x, vector<float> dx, vector<float> alpha, float dt, int noOfElements);
+void rhsvector(vector<float>& d, vector<float> T, vector<float> x, vector<float> dx, vector<float> alpha, float dt, float qrad, float xi, int noOfElements);
+void WriteMEPDG(vector<float> x, vector<float> T, int N, float thickness, int Ni, int n, ofstream& fMEPDG, int timestamp);
+void QuadraticFit(vector<float> x, vector<float> T, int N, vector<float> xi, vector<float>& Ti, int Ni, int n);
+vector<float> pwl_value_1d ( int nd, vector<float> xd, vector<float> yd, int ni, vector<float> xi );

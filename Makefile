@@ -1,12 +1,12 @@
 #Makefile for ILLITHERM-FV
 
 PROGRAM = ilthpcm
-SOURCE = ilthpcm.cpp readinputs.cpp
-OBJECTS = ilthpcm.o readinputs.o
+SOURCE = ilthpcm.cpp readinputs.cpp mesh.cpp surfaceflux.cpp solution.cpp MEPDG.cpp
+OBJECTS = ilthpcm.o readinputs.o mesh.o surfaceflux.o solution.o MEPDG.o
 ARCHIVE = ilthpcm.tar
 
 CC = g++
-CFLAGS = -lm -I.
+CFLAGS = -g -lm -I.
 DEPS = ilthpcm.h
 OPTIONS = -std=c++11
 #OPTIONS = -std=c++11 -g -debug extended -traceback -O0
