@@ -100,13 +100,14 @@ class Weather
 /*Function prototypes*/
 void readInputFile(int &numStepsPerHour, Surface &surface, vector<Layer> &layers, string inputFile);
 void readWeatherData(vector<Weather> &weatherData, string inputFile);
-void defineMesh(vector<float> &x, vector<float> &dx, vector<float> &alpha, vector<Layer> layerVector, int noOfElements);
-float solar(Weather weatherObject);
-float longwave(Weather weatherObject, float Ts, float emissivity);
-float convection(Weather weatherObject, float Ts);
-void solve(vector<float>& Tnew, vector<float> a, vector<float> b, vector<float> c, vector<float> d, int noOfElements);
-void stiffnessmat(vector<float>& a, vector<float>& b, vector<float>& c, vector<float> x, vector<float> dx, vector<float> alpha, float dt, int noOfElements);
-void rhsvector(vector<float>& d, vector<float> T, vector<float> x, vector<float> dx, vector<float> alpha, float dt, float qrad, float xi, int noOfElements);
-void WriteMEPDG(vector<float> x, vector<float> T, int N, float thickness, int Ni, int n, ofstream& fMEPDG, int timestamp);
-void QuadraticFit(vector<float> x, vector<float> T, int N, vector<float> xi, vector<float>& Ti, int Ni, int n);
-vector<float> pwl_value_1d ( int nd, vector<float> xd, vector<float> yd, int ni, vector<float> xi );
+void defineMesh(vector<double> &x, vector<double> &dx, vector<double> &alpha, vector<Layer> layerVector, int noOfElements);
+double solar(Weather weatherObject);
+double longwave(Weather weatherObject, double Ts, double emissivity);
+double convection(Weather weatherObject, double Ts);
+void solve(vector<double>& Tnew, vector<double> a, vector<double> b, vector<double> c, vector<double> d, int noOfElements);
+void stiffnessmat(vector<double>& a, vector<double>& b, vector<double>& c, vector<double> x, vector<double> dx, vector<double> alpha, double dt, int noOfElements);
+void rhsvector(vector<double>& d, vector<double> T, vector<double> x, vector<double> dx, vector<double> alpha, double dt, double qrad, double xi, int noOfElements);
+void WriteMEPDG(vector<double> x, vector<double> T, int N, double thickness, int Ni, int n, ofstream& fMEPDG, int timestamp);
+void QuadraticFit(vector<double> x, vector<double> T, int N, vector<double> xi, vector<double>& Ti, int Ni, int n);
+vector<double> pwl_value_1d ( int nd, vector<double> xd, vector<double> yd, int ni, vector<double> xi );
+double thermochromic_albedo(Surface surface, double Temperature);

@@ -1,16 +1,16 @@
 #include "ilthpcm.h"
 
-void defineMesh(vector<float> &x, vector<float> &dx, vector<float> &alpha, vector<Layer> layerVector, int noOfElements){
+void defineMesh(vector<double> &x, vector<double> &dx, vector<double> &alpha, vector<Layer> layerVector, int noOfElements){
 	
 	int elementCounter = 0, i, j;
-	float dxlayer, alphalayer;
+	double dxlayer, alphalayer;
 	
 	x.resize(noOfElements);
 	dx.resize(noOfElements);
 	alpha.resize(noOfElements);
 	
 	for(i=0;i<layerVector.size();i++){
-		dxlayer = layerVector[i].thickness/(float)layerVector[i].numLayerElements;
+		dxlayer = layerVector[i].thickness/(double)layerVector[i].numLayerElements;
 		alphalayer = layerVector[i].solidMatrixThermalConductivity/(layerVector[i].solidMatrixDensity*layerVector[i].solidMatrixHeatCapacity);
 		
 		for(j=0;j<layerVector[i].numLayerElements;j++){

@@ -1,12 +1,12 @@
 #include "ilthpcm.h"
 
-void solve(vector<float>& Tnew, vector<float> a, vector<float> b, vector<float> c, vector<float> d, int noOfElements){
+void solve(vector<double>& Tnew, vector<double> a, vector<double> b, vector<double> c, vector<double> d, int noOfElements){
 	
 	/*Solution based on the Tridiagonal Matrix Algorithm (TDMA or Thomas algorithm), which is O(n)
 	See https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm */
 	
-	vector<float> cstar, dstar;
-	float m;
+	vector<double> cstar, dstar;
+	double m;
 	
 	cstar.assign(noOfElements,0.0);
 	dstar.assign(noOfElements,0.0);
@@ -33,9 +33,9 @@ void solve(vector<float>& Tnew, vector<float> a, vector<float> b, vector<float> 
 	
 }
 
-void stiffnessmat(vector<float>& a, vector<float>& b, vector<float>& c, vector<float> x, vector<float> dx, vector<float> alpha, float dt, int noOfElements){
+void stiffnessmat(vector<double>& a, vector<double>& b, vector<double>& c, vector<double> x, vector<double> dx, vector<double> alpha, double dt, int noOfElements){
 	
-	float betap, betam, alphap, alpham;
+	double betap, betam, alphap, alpham;
 	
 	/*Piecewise linear finite volume formulation with Crank-Nicolson scheme*/
 	
@@ -73,9 +73,9 @@ void stiffnessmat(vector<float>& a, vector<float>& b, vector<float>& c, vector<f
 	
 }
 
-void rhsvector(vector<float>& d, vector<float> T, vector<float> x, vector<float> dx, vector<float> alpha, float dt, float qrad, float xi, int noOfElements){
+void rhsvector(vector<double>& d, vector<double> T, vector<double> x, vector<double> dx, vector<double> alpha, double dt, double qrad, double xi, int noOfElements){
 	
-	float betap, betam, alphap, alpham;
+	double betap, betam, alphap, alpham;
 	
 	/*Piecewise linear finite volume formulation with Crank-Nicolson scheme*/
 	

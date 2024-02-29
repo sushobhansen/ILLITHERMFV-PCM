@@ -1,11 +1,11 @@
 #include "ilthpcm.h"
 
-float solar(Weather weatherObject){
+double solar(Weather weatherObject){
 	
 	int N1, N2, N3, N;
-	float declination, rHour, A, B, cosh0, h0, Z, h, cosZ, tsunrise, tsunset, time, correction;
-	const float d2r = M_PI/180.0; //Conversion factor, deg to rad 
-	const float S0 = 1367.0; //Solar constant, 1367 W/m2
+	double declination, rHour, A, B, cosh0, h0, Z, h, cosZ, tsunrise, tsunset, time, correction;
+	const double d2r = M_PI/180.0; //Conversion factor, deg to rad 
+	const double S0 = 1367.0; //Solar constant, 1367 W/m2
 	
 	/***** Calculate time of sunrise and sunset *****/
 	/*See https://en.wikipedia.org/wiki/Solar_irradiance*/
@@ -57,9 +57,9 @@ float solar(Weather weatherObject){
 	//Verified that this works - SS 5.31.18
 }
 
-float longwave(Weather weatherObject, float Ts, float emissivity){
-	float const sigma = 5.67*powf(10,-8); //Stefan-Boltzmann constant of 5.67e-8 Wm/K^4 
-	float esky, Tsky, irraditation;
+double longwave(Weather weatherObject, double Ts, double emissivity){
+	double const sigma = 5.67*powf(10,-8); //Stefan-Boltzmann constant of 5.67e-8 Wm/K^4 
+	double esky, Tsky, irraditation;
 	
 	/*Sky emissivity from Berdahl and Martin (1982)*/
 	/*Does not have to be extremely accurate, therefore time and pressure corrections are ignored*/
@@ -71,8 +71,8 @@ float longwave(Weather weatherObject, float Ts, float emissivity){
 	return irraditation;
 }
 
-float convection(Weather weatherObject, float Ts){
-	float h, v;
+double convection(Weather weatherObject, double Ts){
+	double h, v;
 	
 	v = weatherObject.WindSpeed;
 	
@@ -86,4 +86,21 @@ float convection(Weather weatherObject, float Ts){
 	
 	//Verified - SS 6.4.18
 	return h*(weatherObject.AirTemp - Ts);
+}
+
+double thermochromic_albedo(Surface surface, double Temperature)
+{
+	double albedo;
+	if (Temperature < surface.T1therm) {
+		albedo = surface.albedoLow;
+	} 
+	else if (Temperature > surface.T2therm) {
+		albedo = surface.albedoHigh;
+	}
+	else {
+		//albedo = 0.0675 * Temperature - 1.1175; Not sure what this is?
+		albedo = surface.albedoLow*(Temperature - surface.T2therm)/(surface.T1therm - surface.T2therm) + surface.albedoHigh*(Temperature - surface.T1therm)/(surface.T2therm - surface.T1therm);
+	}
+
+	return albedo;
 }

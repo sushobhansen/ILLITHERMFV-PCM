@@ -7,15 +7,15 @@ int main(int argc,char* argv[])
 	Surface surface;
 	vector<Layer> layers;
 	vector<Weather> weatherData;
-	vector<float> x,dx,alpha,T,Tnew;
-	vector<float> a,b,c,d;
-	float solarrad, qirr, qconv, qrad;
-	float dt, xi = -0.1; //dt in seconds, xi in C/m
+	vector<double> x,dx,alpha,T,Tnew;
+	vector<double> a,b,c,d;
+	double solarrad, qirr, qconv, qrad, albedo;
+	double dt, xi = -0.1; //dt in seconds, xi in C/m
 	ofstream fout;
 
 	//Variables for MEPDG format solution
 	ofstream fMEPDG;
-	vector<float> xPCC, TPCC;
+	vector<double> xPCC, TPCC;
 	int timestamp;
 
 	/*Read data*/
@@ -37,7 +37,7 @@ int main(int argc,char* argv[])
 	c.assign(noOfElements,0.0);
 	d.assign(noOfElements,0.0);
 
-	dt = 3600.0/(float)nt;
+	dt = 3600.0/(double)nt;
 
 	//Define stiffness matrix
 	stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
@@ -60,16 +60,27 @@ int main(int argc,char* argv[])
 
 	//Begin loop for each weather case 
 	for(int i=0;i<weatherData.size();i++){
-		cout << "Analyzing hour " << i << " of " << weatherData.size() << endl;
+		cout << "Analyzing hour " << i+1 << " of " << weatherData.size() << endl;
 		//Calculate solar energy ( assumed constant over the hour)
 		solarrad = solar(weatherData[i]);
 
 		//Iterate nt times to cover the hour
 		for(int t=0;t<nt;t++){
 			//Calculate surface energy balance
+			
 			qirr = longwave(weatherData[i], T[0], surface.isothermalEmissivity);
 			qconv = convection(weatherData[i], T[0]);
-			qrad = (solarrad*(1.0-surface.isothermalAlbedo) + qirr + qconv)/(layers[0].solidMatrixDensity*layers[0].solidMatrixHeatCapacity);
+
+			if(surface.surfaceCode == 0)
+			{
+				albedo = surface.isothermalAlbedo;
+			}
+			else
+			{
+				albedo = thermochromic_albedo(surface, T[0]);
+			}
+
+			qrad = (solarrad*(1.0-albedo) + qirr + qconv)/(layers[0].solidMatrixDensity*layers[0].solidMatrixHeatCapacity);
 
 			//Define RHS [d]
 			rhsvector(d, T, x, dx, alpha, dt, qrad, xi, noOfElements);
@@ -78,7 +89,6 @@ int main(int argc,char* argv[])
 			solve(Tnew, a, b, c, d, noOfElements);
 			
 			//Swap solution for new iteration
-			cout << a[5] << "\t" << b[5] << endl;
 			T = Tnew;
 		}
 
@@ -90,8 +100,8 @@ int main(int argc,char* argv[])
 		fout << endl;
 		
 		//Write to MEPDG format (top stabilizedLayer only)
-		xPCC = vector<float>(x.begin(),x.begin()+layers[0].numLayerElements);
-		TPCC = vector<float>(T.begin(),T.begin()+layers[0].numLayerElements);
+		xPCC = vector<double>(x.begin(),x.begin()+layers[0].numLayerElements);
+		TPCC = vector<double>(T.begin(),T.begin()+layers[0].numLayerElements);
 		timestamp = weatherData[i].Year*1E6 + weatherData[i].Month*1E4 + weatherData[i].Day*1E2 + weatherData[i].Hour;
 		
 		WriteMEPDG(xPCC,TPCC,layers[0].numLayerElements,layers[0].thickness,11,2,fMEPDG,timestamp);

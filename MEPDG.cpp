@@ -7,11 +7,11 @@ format for the ThermPCC.dat file.*/
 
 #include "ilthpcm.h"
 
-void WriteMEPDG(vector<float> x, vector<float> T, int N, float thickness, int Ni, int n, ofstream& fMEPDG, int timestamp){
+void WriteMEPDG(vector<double> x, vector<double> T, int N, double thickness, int Ni, int n, ofstream& fMEPDG, int timestamp){
 	
 	/*This function calls QuadraticFit (see notes for that) and then writes the interpolated temperatures in F*/
-	vector<float> xi(Ni,0.0), Ti(Ni,0.0);
-	float dx;
+	vector<double> xi(Ni,0.0), Ti(Ni,0.0);
+	double dx;
 	
 	dx = thickness/(Ni-1);
 	for(int i=0;i<Ni;i++){
@@ -31,7 +31,7 @@ void WriteMEPDG(vector<float> x, vector<float> T, int N, float thickness, int Ni
 	fMEPDG << endl;
 }
 
-void QuadraticFit(vector<float> x, vector<float> T, int N, vector<float> xi, vector<float>& Ti, int Ni, int n){
+void QuadraticFit(vector<double> x, vector<double> T, int N, vector<double> xi, vector<double>& Ti, int Ni, int n){
 	/*This function takes in the solution T at x points (both of size N). A quadratic polynomial (of order n) is fit to this.
 	Ni interpolation points xi are specified. The polynomial is evaluated at those points and the 
 	solutions written to Ti (of size Ni as well).
@@ -45,8 +45,8 @@ void QuadraticFit(vector<float> x, vector<float> T, int N, vector<float> xi, vec
 	
 	/*X stores sum(xi^[...]) for building the augmented matrix B. Y is the RHS.
 	a is the vector of coefficients to solve. temp and t are intermediate variables.*/
-	float X[2*n+1], B[n+1][n+2], Y[n+1], a[n+1] = {0.0};
-	float temp, t;
+	double X[2*n+1], B[n+1][n+2], Y[n+1], a[n+1] = {0.0};
+	double temp, t;
 	int i,j,k;
 	
 	//Define X
@@ -130,7 +130,7 @@ void QuadraticFit(vector<float> x, vector<float> T, int N, vector<float> xi, vec
 	}
 }
 
-vector<float> pwl_value_1d ( int nd, vector<float> xd, vector<float> yd, int ni, vector<float> xi ){
+vector<double> pwl_value_1d ( int nd, vector<double> xd, vector<double> yd, int ni, vector<double> xi ){
 	/*From: https://people.sc.fsu.edu/~jburkardt/cpp_src/pwl_interp_1d/pwl_interp_1d.cpp
 	Evaluates the piecewise linear interpolated values
 	xd[nd] is the vector of locations where data yd[nd] is known*
@@ -139,8 +139,8 @@ vector<float> pwl_value_1d ( int nd, vector<float> xd, vector<float> yd, int ni,
 		
 	int i;
 	int k;
-	float t;
-	vector<float> yi(ni,0.0);
+	double t;
+	vector<double> yi(ni,0.0);
 
 	for ( i = 0; i < ni; i++ )
 	{
