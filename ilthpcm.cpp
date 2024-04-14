@@ -12,6 +12,14 @@ int main(int argc,char* argv[])
 	double solarrad, qirr, qconv, qrad, albedo;
 	double dt, xi = -0.1; //dt in seconds, xi in C/m
 	ofstream fout;
+	double fl0; //liquid fraction initial update
+	double dfl; //liquid fraction derivative
+	vector<double> fl; //liquid fraction vector
+	double deltaH; // Instantaneous enthaply
+	double Sc,Sp, underrelax_factor; // Source term in RHS and Sorce Term in LHS
+	double k_eff; //Composite thermal conductivity
+	double c_eff; //Composite heat capacity
+	double rho_eff; //Composite density
 
 	//Variables for MEPDG format solution
 	ofstream fMEPDG;
@@ -20,7 +28,7 @@ int main(int argc,char* argv[])
 
 	/*Read data*/
 	//Read input file
-	readInputFile(nt, surface, layers, argv[1]);
+	readInputFile(nt, underrelax_factor, surface, layers, argv[1]);
 	//Read weather data
 	readWeatherData(weatherData, argv[2]);
 
@@ -67,6 +75,9 @@ int main(int argc,char* argv[])
 		//Iterate nt times to cover the hour
 		for(int t=0;t<nt;t++){
 			//Calculate surface energy balance
+			/*Update fl*/
+			/*Calculate alpha from fl*/
+			/*Calculate a,b,c,d*/
 			
 			qirr = longwave(weatherData[i], T[0], surface.isothermalEmissivity);
 			qconv = convection(weatherData[i], T[0]);

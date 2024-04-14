@@ -1,6 +1,6 @@
 #include "ilthpcm.h"
 
-void readInputFile(int &numStepsPerHour, Surface &surface, vector<Layer> &layers, string inputFile)
+void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &surface, vector<Layer> &layers, string inputFile)
 {
     ifstream ifile;
     string buf, heading;
@@ -23,7 +23,12 @@ void readInputFile(int &numStepsPerHour, Surface &surface, vector<Layer> &layers
             throw runtime_error("Failed to find *GENERAL section. Check input file.\n");
         }
         getline(ifile, buf);
-        sscanf(buf.c_str(), "%d ", &numStepsPerHour);
+        sscanf(buf.c_str(), "%d %lf", &numStepsPerHour, &underrelax_factor);
+
+        if(underrelax_factor > 1.0 || underrelax_factor < 0.0)
+        {
+            throw runtime_error("Under-relaxation factor must be between 0 and 1.\'n");
+        }
 
         //*SURFACE section
         getline(ifile, heading);

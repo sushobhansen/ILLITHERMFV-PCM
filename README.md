@@ -4,12 +4,12 @@ A repository for an advanced version of ILLITHERM-FV that also implements PCMs a
 ### Input file format - layers
 **GENERAL SECTION**
 This section starts with "*GENERAL" and contains information related to the time steps.
-First input: number of time steps per hour of analysis (must be integer). For example:
+First input: number of time steps per hour of analysis (must be integer). Second input: under-relaxation factor For example:
 ```
 *GENERAL
-10
+10 0.5
 ```
-Where 10 is the number of steps per hour
+Where 10 is the number of steps per hour and 0.5 is the under-relaxation factor
 
 **SURFACE SECTION**
 This section starts with "*SURFACE" and contains information related to the surface i.e., albedo and emissivity. This consists of 1 line of **space delimited** data, with the first value being a surface type code.

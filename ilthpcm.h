@@ -98,7 +98,7 @@ class Weather
 };
 
 /*Function prototypes*/
-void readInputFile(int &numStepsPerHour, Surface &surface, vector<Layer> &layers, string inputFile);
+void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &surface, vector<Layer> &layers, string inputFile);
 void readWeatherData(vector<Weather> &weatherData, string inputFile);
 void defineMesh(vector<double> &x, vector<double> &dx, vector<double> &alpha, vector<Layer> layerVector, int noOfElements);
 double solar(Weather weatherObject);
