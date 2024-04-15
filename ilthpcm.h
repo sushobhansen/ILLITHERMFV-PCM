@@ -47,10 +47,12 @@ class Layer
 		double solidMatrixHeatCapacity;
 		double solidMatrixDensity;
 		double solidMatrixFraction;
-		double PCMLowerTransitionTemp, PCMUpperTransitionTemp;
+		double PCMLowerTransitionTemp, PCMUpperTransitionTemp, PCMIntermediateTransitionTemp;
 		double PCMSolidThermalConductivity, PCMLiquidThermalConductivity;
 		double PCMSolidHeatCapacity, PCMLiquidHeatCapacity;
-		double PCMDensity, PCMLatentHeat;
+		double PCMLatentHeat, PCMDensity;
+		double effectiveDensity;
+		vector<double> fl, effectiveThermalConductivity, effectiveHeatCapacity;
 
 		Layer()
 		{
@@ -63,12 +65,14 @@ class Layer
 		solidMatrixFraction = NAN;
 		PCMLowerTransitionTemp = NAN;
 		PCMUpperTransitionTemp = NAN;
+		PCMIntermediateTransitionTemp = NAN;
 		PCMSolidThermalConductivity = NAN;
 		PCMLiquidThermalConductivity = NAN;
 		PCMSolidHeatCapacity = NAN;
 		PCMLiquidHeatCapacity = NAN;
-		PCMDensity = NAN;
 		PCMLatentHeat = NAN;
+		PCMDensity = NAN;
+		effectiveDensity = NAN;
 	}
 };
 
@@ -111,3 +115,5 @@ void WriteMEPDG(vector<double> x, vector<double> T, int N, double thickness, int
 void QuadraticFit(vector<double> x, vector<double> T, int N, vector<double> xi, vector<double>& Ti, int Ni, int n);
 vector<double> pwl_value_1d ( int nd, vector<double> xd, vector<double> yd, int ni, vector<double> xi );
 double thermochromic_albedo(Surface surface, double Temperature);
+void update_liquid_fraction(vector<Layer>& layers, vector<double> T);
+void update_thermal_properties(vector<Layer> &layers);

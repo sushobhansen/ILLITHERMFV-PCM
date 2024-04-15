@@ -44,6 +44,7 @@ int main(int argc,char* argv[])
 	b.assign(noOfElements,0.0);
 	c.assign(noOfElements,0.0);
 	d.assign(noOfElements,0.0);
+	
 
 	dt = 3600.0/(double)nt;
 

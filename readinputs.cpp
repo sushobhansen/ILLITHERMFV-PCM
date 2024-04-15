@@ -72,12 +72,27 @@ void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &sur
              {
                 Layer tempLayer;
                 sscanf(buf.c_str(), "%d %lf %lf %lf %lf %d ", &tempLayer.layerCode, &tempLayer.thickness, &tempLayer.solidMatrixThermalConductivity, &tempLayer.solidMatrixHeatCapacity, &tempLayer.solidMatrixDensity, &tempLayer.numLayerElements);
+                tempLayer.fl.assign(tempLayer.numLayerElements, 0.0);
                 layers.push_back(tempLayer);
+
              }
              else //Layer has PCMs
              {
                 Layer tempLayer;
-                sscanf(buf.c_str(), "%d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d ", &tempLayer.layerCode, &tempLayer.thickness, &tempLayer.solidMatrixThermalConductivity, &tempLayer.solidMatrixHeatCapacity, &tempLayer.solidMatrixDensity, &tempLayer.solidMatrixFraction, &tempLayer.PCMLowerTransitionTemp, &tempLayer.PCMUpperTransitionTemp, &tempLayer.PCMSolidThermalConductivity, &tempLayer.PCMLiquidThermalConductivity, &tempLayer.PCMSolidHeatCapacity, &tempLayer.PCMLiquidHeatCapacity, &tempLayer.PCMDensity, &tempLayer.PCMLatentHeat, &tempLayer.numLayerElements);
+                sscanf(buf.c_str(), "%d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d ", &tempLayer.layerCode, &tempLayer.thickness, &tempLayer.solidMatrixThermalConductivity, &tempLayer.solidMatrixHeatCapacity, &tempLayer.solidMatrixDensity, &tempLayer.solidMatrixFraction, &tempLayer.PCMLowerTransitionTemp, &tempLayer.PCMIntermediateTransitionTemp, &tempLayer.PCMUpperTransitionTemp, &tempLayer.PCMSolidThermalConductivity, &tempLayer.PCMLiquidThermalConductivity, &tempLayer.PCMSolidHeatCapacity, &tempLayer.PCMLiquidHeatCapacity, &tempLayer.PCMDensity, &tempLayer.PCMLatentHeat, &tempLayer.numLayerElements);
+                
+                if(tempLayer.solidMatrixFraction < 0.0 || tempLayer.solidMatrixFraction > 1.0)
+                {
+                    throw runtime_error("Solid matrix fraction must be between 0 and 1.");
+                }
+
+                //Need to check that lawer < intermediate < upper temps
+
+                //Initialization of properties
+                tempLayer.effectiveDensity = (tempLayer.solidMatrixFraction * tempLayer.solidMatrixDensity) + (1.0 - tempLayer.solidMatrixFraction) * tempLayer.PCMDensity;
+                tempLayer.fl.assign(tempLayer.numLayerElements, 0.0);
+                tempLayer.effectiveThermalConductivity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixThermalConductivity);
+                tempLayer.effectiveHeatCapacity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixHeatCapacity);
                 layers.push_back(tempLayer);
              }
         }
