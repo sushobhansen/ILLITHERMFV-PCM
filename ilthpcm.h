@@ -52,7 +52,7 @@ class Layer
 		double PCMSolidHeatCapacity, PCMLiquidHeatCapacity;
 		double PCMLatentHeat, PCMDensity;
 		double effectiveDensity;
-		vector<double> fl, effectiveThermalConductivity, effectiveHeatCapacity;
+		vector<double> fl, effectiveThermalConductivity, effectiveHeatCapacity, enthalpy;
 
 		Layer()
 		{

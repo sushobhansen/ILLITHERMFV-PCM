@@ -1,8 +1,8 @@
 #Makefile for ILLITHERM-FV
 
 PROGRAM = ilthpcm
-SOURCE = ilthpcm.cpp readinputs.cpp mesh.cpp surfaceflux.cpp solution.cpp MEPDG.cpp
-OBJECTS = ilthpcm.o readinputs.o mesh.o surfaceflux.o solution.o MEPDG.o
+SOURCE = ilthpcm.cpp readinputs.cpp mesh.cpp surfaceflux.cpp solution.cpp MEPDG.cpp pcmfunctions.cpp
+OBJECTS = ilthpcm.o readinputs.o mesh.o surfaceflux.o solution.o MEPDG.o pcmfunctions.o
 ARCHIVE = ilthpcm.tar
 
 CC = g++

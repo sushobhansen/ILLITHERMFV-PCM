@@ -91,6 +91,7 @@ void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &sur
                 //Initialization of properties
                 tempLayer.effectiveDensity = (tempLayer.solidMatrixFraction * tempLayer.solidMatrixDensity) + (1.0 - tempLayer.solidMatrixFraction) * tempLayer.PCMDensity;
                 tempLayer.fl.assign(tempLayer.numLayerElements, 0.0);
+                tempLayer.enthalpy.assign(tempLayer.numLayerElements, 0.0);
                 tempLayer.effectiveThermalConductivity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixThermalConductivity);
                 tempLayer.effectiveHeatCapacity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixHeatCapacity);
                 layers.push_back(tempLayer);
