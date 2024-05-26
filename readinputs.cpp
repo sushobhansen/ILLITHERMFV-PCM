@@ -94,6 +94,7 @@ void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &sur
                 tempLayer.enthalpy.assign(tempLayer.numLayerElements, 0.0);
                 tempLayer.effectiveThermalConductivity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixThermalConductivity);
                 tempLayer.effectiveHeatCapacity.assign(tempLayer.numLayerElements, tempLayer.solidMatrixHeatCapacity);
+                tempLayer.effectiveAlpha.assign(tempLayer.numLayerElements, tempLayer.solidMatrixThermalConductivity/(tempLayer.solidMatrixDensity* tempLayer.solidMatrixHeatCapacity));
                 layers.push_back(tempLayer);
              }
         }

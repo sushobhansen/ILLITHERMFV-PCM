@@ -14,8 +14,7 @@ int main(int argc,char* argv[])
 	ofstream fout;
 	double fl0; //liquid fraction initial update
 	double dfl; //liquid fraction derivative
-	vector<double> fl; //liquid fraction vector
-	double deltaH; // Instantaneous enthaply
+	vector<double> fl, deltaH; //liquid fraction vector
 	double Sc,Sp, underrelax_factor; // Source term in RHS and Sorce Term in LHS
 	double k_eff; //Composite thermal conductivity
 	double c_eff; //Composite heat capacity
@@ -38,17 +37,22 @@ int main(int argc,char* argv[])
 		noOfElements += layers[i].numLayerElements;
 	}
 	
-	defineMesh(x, dx, alpha, layers, noOfElements);
+	defineMesh(x, dx, layers, noOfElements);
 
 	a.assign(noOfElements,0.0);
 	b.assign(noOfElements,0.0);
 	c.assign(noOfElements,0.0);
 	d.assign(noOfElements,0.0);
+	alpha.assign(noOfElements,0.0);
+	deltaH.assign(noOfElements,0.0);
 	
 
 	dt = 3600.0/(double)nt;
 
 	//Define stiffness matrix
+	update_liquid_fraction(layers, T);
+	update_thermal_properties(layers);
+	assign_layer_to_element(alpha, deltaH, layers, noOfElements);
 	stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
 
 	//Create output file
@@ -102,6 +106,11 @@ int main(int argc,char* argv[])
 			
 			//Swap solution for new iteration
 			T = Tnew;
+
+			update_liquid_fraction(layers, T);
+			update_thermal_properties(layers);
+			assign_layer_to_element(alpha, deltaH, layers, noOfElements);
+			stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
 		}
 
 		//Print current case to file

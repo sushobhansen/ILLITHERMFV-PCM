@@ -102,6 +102,9 @@ void rhsvector(vector<double>& d, vector<double> T, vector<double> x, vector<dou
 			
 			d[j] = T[j-1]*(0.5*dt/dx[j])*alpham/(x[j]-x[j-1]) + T[j]*(1.0-(0.5*dt/dx[j])*((alphap/(x[j+1]-x[j]))+(alpham/(x[j]-x[j-1])))) + T[j+1]*(0.5*dt/dx[j])*alphap/(x[j+1]-x[j]);
 		}
+
+		//Add source term
+		//d[j] += dx[j]*deltaH[j]*();
 	}
 	
 }

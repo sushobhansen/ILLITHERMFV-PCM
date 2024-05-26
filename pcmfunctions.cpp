@@ -14,6 +14,8 @@ void update_thermal_properties(vector<Layer> &layers)
 
 				layers[i].effectiveThermalConductivity[j] = layers[i].solidMatrixFraction*layers[i].solidMatrixThermalConductivity + (1.0 - layers[i].solidMatrixFraction)*kPCM;
 				layers[i].effectiveHeatCapacity[j] = layers[i].solidMatrixFraction*layers[i].solidMatrixHeatCapacity + (1.0 - layers[i].solidMatrixFraction)*CPCM;
+
+				layers[i].effectiveAlpha[j] = layers[i].effectiveThermalConductivity[j]/(layers[i].effectiveDensity*layers[i].effectiveHeatCapacity[j]);
 			}
 		}
 	}
@@ -69,5 +71,25 @@ void update_enthalpy(vector<double> T, vector<Layer> &layers)
 		}
 		
 		elementOffset += layers[i].numLayerElements;
+	}
+}
+
+void assign_layer_to_element(vector<double>& alpha, vector<double>& deltaH, vector<Layer> layers, int noOfElements)
+{
+	int elementNum = 0;
+
+	for (size_t i = 0; i < layers.size(); i++)
+	{
+		for(int j = 0; j < layers[i].numLayerElements; j++)
+		{
+			alpha[elementNum] = layers[i].effectiveAlpha[j] ;
+			deltaH[elementNum] = layers[i].enthalpy[j];
+			elementNum++;
+		}
+	}
+
+	if(elementNum != noOfElements)
+	{
+		throw runtime_error("elementNum != noOfElements in assign_alpha");
 	}
 }

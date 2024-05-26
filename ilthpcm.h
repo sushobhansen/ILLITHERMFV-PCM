@@ -52,7 +52,7 @@ class Layer
 		double PCMSolidHeatCapacity, PCMLiquidHeatCapacity;
 		double PCMLatentHeat, PCMDensity;
 		double effectiveDensity;
-		vector<double> fl, effectiveThermalConductivity, effectiveHeatCapacity, enthalpy;
+		vector<double> fl, effectiveThermalConductivity, effectiveHeatCapacity, enthalpy, effectiveAlpha;
 
 		Layer()
 		{
@@ -104,7 +104,7 @@ class Weather
 /*Function prototypes*/
 void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &surface, vector<Layer> &layers, string inputFile);
 void readWeatherData(vector<Weather> &weatherData, string inputFile);
-void defineMesh(vector<double> &x, vector<double> &dx, vector<double> &alpha, vector<Layer> layerVector, int noOfElements);
+void defineMesh(vector<double> &x, vector<double> &dx, vector<Layer> layerVector, int noOfElements);
 double solar(Weather weatherObject);
 double longwave(Weather weatherObject, double Ts, double emissivity);
 double convection(Weather weatherObject, double Ts);
@@ -117,3 +117,4 @@ vector<double> pwl_value_1d ( int nd, vector<double> xd, vector<double> yd, int 
 double thermochromic_albedo(Surface surface, double Temperature);
 void update_liquid_fraction(vector<Layer>& layers, vector<double> T);
 void update_thermal_properties(vector<Layer> &layers);
+void assign_layer_to_element(vector<double>& alpha, vector<double>& deltaH, vector<Layer> layers, int noOfElements);
