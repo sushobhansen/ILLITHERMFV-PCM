@@ -1,6 +1,6 @@
 #include "ilthpcm.h"
 
-void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &surface, vector<Layer> &layers, string inputFile)
+void readInputFile(int &numStepsPerHour, double &underrelax_factor, int &maxinneriters, double &TOL, Surface &surface, vector<Layer> &layers, string inputFile)
 {
     ifstream ifile;
     string buf, heading;
@@ -23,7 +23,7 @@ void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &sur
             throw runtime_error("Failed to find *GENERAL section. Check input file.\n");
         }
         getline(ifile, buf);
-        sscanf(buf.c_str(), "%d %lf", &numStepsPerHour, &underrelax_factor);
+        sscanf(buf.c_str(), "%d %d %lf %lf", &numStepsPerHour, &maxinneriters, &underrelax_factor, &TOL);
 
         if(underrelax_factor > 1.0 || underrelax_factor < 0.0)
         {
@@ -120,7 +120,7 @@ void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &sur
     {
         cout << "***Error in reading input layers file: \n";
         cout << e.what();
-        cout << "Program exiting \n";
+        cout << "\nProgram exiting \n";
         exit(1);
     }
 }

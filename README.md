@@ -7,9 +7,9 @@ This section starts with "*GENERAL" and contains information related to the time
 First input: number of time steps per hour of analysis (must be integer). Second input: under-relaxation factor For example:
 ```
 *GENERAL
-10 0.5
+10 12 0.5 1e-4
 ```
-Where 10 is the number of steps per hour and 0.5 is the under-relaxation factor
+Where 10 is the number of steps per hour, 12 is the number of inner iterations for updating liquid fraction, 0.5 is the under-relaxation factor, and 1e-4 is the tolerance for convergence of the liquid fraction update.
 
 **SURFACE SECTION**
 This section starts with "*SURFACE" and contains information related to the surface i.e., albedo and emissivity. This consists of 1 line of **space delimited** data, with the first value being a surface type code.

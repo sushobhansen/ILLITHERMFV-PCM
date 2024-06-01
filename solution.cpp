@@ -108,3 +108,41 @@ void rhsvector(vector<double>& d, vector<double> T, vector<double> x, vector<dou
 	}
 	
 }
+
+double calculate_rmse(vector<double> T1, vector<double> T2)
+{	
+	double rmse;
+
+	if(T1.size() != T2.size())
+	{
+		throw runtime_error("Error in calculate_rmse! Vectors must be of same size!");
+	}
+
+	rmse = 0.0;
+	for(int i = 0; i < T1.size(); i++)
+	{
+		rmse += powf(T1[i] - T2[i], 2.0);
+	}
+
+	rmse /= (double) T1.size();
+	rmse = sqrt(rmse);
+
+	return rmse;
+}
+
+double calculate_max_diff(vector<double> T1, vector<double> T2)
+{
+	double maxdiff = 0.0, diff;
+	if(T1.size() != T2.size())
+	{
+		throw runtime_error("Error in calculate_rmse! Vectors must be of same size!");
+	}
+
+	for(int i = 0; i < T1.size(); i++)
+	{
+		diff = fabs(T1[i] - T2[i]);
+		if(diff > maxdiff) maxdiff = diff;
+	}
+
+	return maxdiff;
+}

@@ -3,14 +3,14 @@
 int main(int argc,char* argv[])
 {
 	/*Declarations*/
-	int nt, noOfElements;
+	int nt, noOfElements, maxinneriters;
 	Surface surface;
 	vector<Layer> layers;
 	vector<Weather> weatherData;
 	vector<double> x,dx,alpha,T,Tnew;
 	vector<double> a,b,c,d;
 	double solarrad, qirr, qconv, qrad, albedo;
-	double dt, xi = -0.1; //dt in seconds, xi in C/m
+	double dt, xi = -0.1, TOL; //dt in seconds, xi in C/m
 	ofstream fout;
 	double fl0; //liquid fraction initial update
 	double dfl; //liquid fraction derivative
@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
 
 	/*Read data*/
 	//Read input file
-	readInputFile(nt, underrelax_factor, surface, layers, argv[1]);
+	readInputFile(nt, underrelax_factor, maxinneriters, TOL, surface, layers, argv[1]);
 	//Read weather data
 	readWeatherData(weatherData, argv[2]);
 
@@ -48,13 +48,14 @@ int main(int argc,char* argv[])
 	
 
 	dt = 3600.0/(double)nt;
-
 	//Define stiffness matrix
-	update_liquid_fraction(layers, T);
+	//Initialize temperature field
+	T.assign(noOfElements,weatherData[0].AirTemp);
+	Tnew.assign(noOfElements,0.0);
+	update_liquid_fraction(layers, T, underrelax_factor, 0);
 	update_thermal_properties(layers);
 	assign_layer_to_element(alpha, deltaH, layers, noOfElements);
-	stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
-
+	
 	//Create output file
 	fout.open(argv[3],ios::trunc);
 	fMEPDG.open("ThermalPCC_ILTH.dat",ios::trunc);
@@ -67,10 +68,6 @@ int main(int argc,char* argv[])
 	}
 	fout << endl;
 
-	//Initialize temperature field
-	T.assign(noOfElements,weatherData[0].AirTemp);
-	Tnew.assign(noOfElements,0.0);
-
 	//Begin loop for each weather case 
 	for(int i=0;i<weatherData.size();i++){
 		cout << "Analyzing hour " << i+1 << " of " << weatherData.size() << endl;
@@ -79,38 +76,42 @@ int main(int argc,char* argv[])
 
 		//Iterate nt times to cover the hour
 		for(int t=0;t<nt;t++){
-			//Calculate surface energy balance
-			/*Update fl*/
-			/*Calculate alpha from fl*/
-			/*Calculate a,b,c,d*/
-			
-			qirr = longwave(weatherData[i], T[0], surface.isothermalEmissivity);
-			qconv = convection(weatherData[i], T[0]);
-
-			if(surface.surfaceCode == 0)
+			//Inner iterations for updating liquid fraction
+			for (int inner = 0; inner < maxinneriters; inner++)
 			{
-				albedo = surface.isothermalAlbedo;
+				if(surface.surfaceCode == 0)
+				{
+					albedo = surface.isothermalAlbedo;
+				}
+				else
+				{
+					albedo = thermochromic_albedo(surface, T[0]);
+				}
+
+				qirr = longwave(weatherData[i], T[0], surface.isothermalEmissivity);
+				qconv = convection(weatherData[i], T[0]);
+				qrad = (solarrad*(1.0-albedo) + qirr + qconv)/(layers[0].solidMatrixDensity*layers[0].solidMatrixHeatCapacity);
+				stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
+				//Define RHS [d]
+				rhsvector(d, T, x, dx, alpha, dt, qrad, xi, noOfElements);
+				//Solve the system of equations and store result in Tnew
+				solve(Tnew, a, b, c, d, noOfElements);
+				if(calculate_max_diff(T, Tnew) < TOL)
+				{
+					T = Tnew;
+					//Now update liquid fraction iteratively
+					update_liquid_fraction(layers, T, underrelax_factor, 1);
+					update_thermal_properties(layers);
+					assign_layer_to_element(alpha, deltaH, layers, noOfElements);
+					cout << "Converged in " << inner+1 << " iterations.\n";
+					break;
+				}
+				T = Tnew;
+				//Now update liquid fraction iteratively
+				update_liquid_fraction(layers, T, underrelax_factor, 1);
+				update_thermal_properties(layers);
+				assign_layer_to_element(alpha, deltaH, layers, noOfElements);
 			}
-			else
-			{
-				albedo = thermochromic_albedo(surface, T[0]);
-			}
-
-			qrad = (solarrad*(1.0-albedo) + qirr + qconv)/(layers[0].solidMatrixDensity*layers[0].solidMatrixHeatCapacity);
-
-			//Define RHS [d]
-			rhsvector(d, T, x, dx, alpha, dt, qrad, xi, noOfElements);
-
-			//Solve the system of equations and store result in Tnew
-			solve(Tnew, a, b, c, d, noOfElements);
-			
-			//Swap solution for new iteration
-			T = Tnew;
-
-			update_liquid_fraction(layers, T);
-			update_thermal_properties(layers);
-			assign_layer_to_element(alpha, deltaH, layers, noOfElements);
-			stiffnessmat(a, b, c, x, dx, alpha, dt, noOfElements);
 		}
 
 		//Print current case to file
@@ -120,6 +121,19 @@ int main(int argc,char* argv[])
 		}
 		fout << endl;
 		
+		for(int ilayer = 0; ilayer < layers.size(); ilayer++)
+		{
+			cout << layers[ilayer].layerCode << endl;
+			if(layers[ilayer].layerCode == 1)
+			{
+				for(int ielem = 0; ielem < layers[i].numLayerElements; ielem++)
+				{
+					cout << layers[ilayer].fl[ielem] << " ";
+				}
+				cout << endl;
+			}
+		}
+
 		//Write to MEPDG format (top stabilizedLayer only)
 		xPCC = vector<double>(x.begin(),x.begin()+layers[0].numLayerElements);
 		TPCC = vector<double>(T.begin(),T.begin()+layers[0].numLayerElements);

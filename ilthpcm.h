@@ -102,7 +102,7 @@ class Weather
 };
 
 /*Function prototypes*/
-void readInputFile(int &numStepsPerHour, double &underrelax_factor, Surface &surface, vector<Layer> &layers, string inputFile);
+void readInputFile(int &numStepsPerHour, double &underrelax_factor, int &maxinneriters, double &TOL, Surface &surface, vector<Layer> &layers, string inputFile);
 void readWeatherData(vector<Weather> &weatherData, string inputFile);
 void defineMesh(vector<double> &x, vector<double> &dx, vector<Layer> layerVector, int noOfElements);
 double solar(Weather weatherObject);
@@ -115,6 +115,8 @@ void WriteMEPDG(vector<double> x, vector<double> T, int N, double thickness, int
 void QuadraticFit(vector<double> x, vector<double> T, int N, vector<double> xi, vector<double>& Ti, int Ni, int n);
 vector<double> pwl_value_1d ( int nd, vector<double> xd, vector<double> yd, int ni, vector<double> xi );
 double thermochromic_albedo(Surface surface, double Temperature);
-void update_liquid_fraction(vector<Layer>& layers, vector<double> T);
+void update_liquid_fraction(vector<Layer>& layers, vector<double> T, double underrelax, bool iterative);
 void update_thermal_properties(vector<Layer> &layers);
 void assign_layer_to_element(vector<double>& alpha, vector<double>& deltaH, vector<Layer> layers, int noOfElements);
+double calculate_rmse(vector<double> T1, vector<double> T2);
+double calculate_max_diff(vector<double> T1, vector<double> T2);

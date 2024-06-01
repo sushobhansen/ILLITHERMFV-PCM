@@ -21,10 +21,10 @@ void update_thermal_properties(vector<Layer> &layers)
 	}
 }
 
-void update_liquid_fraction(vector<Layer> &layers, vector<double> T)
+void update_liquid_fraction(vector<Layer> &layers, vector<double> T, double underrelax, bool iterative)
 {
 	int elementOffset = 0;
-	double sigmaS, sigmaL, nodeTemperature;
+	double sigmaS, sigmaL, nodeTemperature, flnode;
 
 	for (size_t i = 0; i < layers.size(); i++)
 	{
@@ -32,19 +32,53 @@ void update_liquid_fraction(vector<Layer> &layers, vector<double> T)
 		{
 			sigmaS = (sqrt(2.0)/4.0)*(layers[i].PCMIntermediateTransitionTemp - layers[i].PCMLowerTransitionTemp);
 			sigmaL = (sqrt(2.0)/4.0)*(layers[i].PCMUpperTransitionTemp - layers[i].PCMIntermediateTransitionTemp);
-
+			
 			for(int j = 0; j < layers[i].numLayerElements; j++)
 			{
 				nodeTemperature = T[elementOffset + j];
+
 				if(nodeTemperature <= layers[i].PCMIntermediateTransitionTemp)
 				{
-					layers[i].fl[j] = erf((nodeTemperature - layers[i].PCMIntermediateTransitionTemp)/sigmaS) + 1.0;
-					layers[i].fl[j] *= sigmaS/(sigmaS + sigmaL);
+					flnode = erf((nodeTemperature - layers[i].PCMIntermediateTransitionTemp)/sigmaS) + 1.0;
+					flnode *= sigmaS/(sigmaS + sigmaL);	
+					
+					if(iterative)
+					{
+						layers[i].fl[j] = layers[i].fl[j] + underrelax*(flnode - layers[i].fl[j]);
+						if (layers[i].fl[j] > 1.0)
+						{
+							layers[i].fl[j] = 1.0;
+						}
+						else if(layers[i].fl[j] < 0.0)
+						{
+							layers[i].fl[j] = 0.0;
+						}
+						
+					}
+					else{
+						layers[i].fl[j] = flnode;
+					}
+
 				}
 				else
 				{
-					layers[i].fl[j] = sigmaL*erf((nodeTemperature - layers[i].PCMIntermediateTransitionTemp)/sigmaL) + sigmaS;
-					layers[i].fl[j] *= 1.0/(sigmaS + sigmaL);
+					flnode = sigmaL*erf((nodeTemperature - layers[i].PCMIntermediateTransitionTemp)/sigmaL) + sigmaS;
+					flnode *= 1.0/(sigmaS + sigmaL);
+					if(iterative)
+					{
+						layers[i].fl[j] = layers[i].fl[j] + underrelax*(flnode - layers[i].fl[j]);
+						if (layers[i].fl[j] > 1.0)
+						{
+							layers[i].fl[j] = 1.0;
+						}
+						else if(layers[i].fl[j] < 0.0)
+						{
+							layers[i].fl[j] = 0.0;
+						}
+					}
+					else{
+						layers[i].fl[j] = flnode;
+					}
 				}
 			}
 		}
@@ -82,8 +116,16 @@ void assign_layer_to_element(vector<double>& alpha, vector<double>& deltaH, vect
 	{
 		for(int j = 0; j < layers[i].numLayerElements; j++)
 		{
-			alpha[elementNum] = layers[i].effectiveAlpha[j] ;
-			deltaH[elementNum] = layers[i].enthalpy[j];
+			if(layers[i].layerCode == 0)
+			{
+				alpha[elementNum] = 0.0;
+				deltaH[elementNum] = 0.0;
+			}
+			else
+			{
+				alpha[elementNum] = layers[i].effectiveAlpha[j] ;
+				deltaH[elementNum] = layers[i].enthalpy[j];
+			}
 			elementNum++;
 		}
 	}
